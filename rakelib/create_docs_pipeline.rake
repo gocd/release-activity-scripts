@@ -54,7 +54,7 @@ task :create_pipeline do
 
   erb = get_template(pipeline_config_format)
   pipeline_config_content = erb.result(binding)
-  pipeline_config_filename = "#{go_version}.gopipeline.#{pipeline_config_format}"
+  pipeline_config_filename = "#{go_version}.gocd.#{pipeline_config_format}"
   repo_url = "https://#{git_username}:#{git_token}@github.com/gocd/#{repo_name}"
 
   rm_rf 'build'
