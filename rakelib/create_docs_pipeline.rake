@@ -36,6 +36,10 @@ end
 
 desc 'Create pipeline for given repository'
 task :create_pipeline do
+  file_extensions_map = {
+    'json' => 'gopipeline.json',
+    'yaml' => 'gocd.yaml'
+  }
   pipeline_config_format = validate_config_format(Env.get_or_error('PIPELINE_CONFIG_FORMAT'))
   go_version = VersionFileReader.go_version || Env.get_or_error('VERSION_TO_RELEASE')
   git_username = Env.get_or_error('GITHUB_USER')
@@ -54,7 +58,7 @@ task :create_pipeline do
 
   erb = get_template(pipeline_config_format)
   pipeline_config_content = erb.result(binding)
-  pipeline_config_filename = "#{go_version}.gocd.#{pipeline_config_format}"
+  pipeline_config_filename = "#{go_version}.#{file_extensions_map[pipeline_config_format]}"
   repo_url = "https://#{git_username}:#{git_token}@github.com/gocd/#{repo_name}"
 
   rm_rf 'build'
