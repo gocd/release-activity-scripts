@@ -7,8 +7,8 @@ require_relative '../lib/version_validator'
 desc "bump version"
 
 def build_version_json(repo_name, version, type)
-  version_json = {
-      version: version,
+  version_json        = {
+      version:  version,
       location: "https://#{repo_name}/#{version}/",
   }
   version_json[:type] = type if type
@@ -20,7 +20,7 @@ def get_existing_versions_info(repo_name, version_to_release)
     JSON.parse(File.read('versions.json'), symbolize_names: true)
   else
     available_versions = Dir['*'].reject {|f| !File.directory?(f)}.collect {|f| Gem::Version.new(f) rescue nil}.compact.sort.reverse.collect(&:to_s)
-    versions = [build_version_json(repo_name, version_to_release, 'next')]
+    versions           = [build_version_json(repo_name, version_to_release, 'next')]
     available_versions.each_with_index do |version, i|
       versions << build_version_json(repo_name, version, ('latest' if i == 0))
     end
@@ -69,18 +69,18 @@ def git_push
 end
 
 current_version_file_location = {
-    'api.go.cd' => {dir: 'lib', file: 'version.rb'},
+    'api.go.cd'        => {dir: 'lib', file: 'version.rb'},
     'plugin-api.go.cd' => {dir: 'lib', file: 'version.rb'},
-    'docs.go.cd' => {dir: 'rakelib', file: 'version.rake'},
-    'developer.go.cd' => {dir: 'rakelib', file: 'version.rake'}
+    'docs.go.cd'       => {dir: 'rakelib', file: 'version.rake'},
+    'developer.go.cd'  => {dir: 'rakelib', file: 'version.rake'}
 }
 
 task :bump_docs_version do
-  repo_owner = Env.get_or_error('ORG')
-  repo_name = Env.get_or_error('REPO_NAME')
-  github_token = Env.get('GITHUB_TOKEN')
-  github_username = Env.get('GITHUB_USER')
-  next_version = Env.get_or_error('NEXT_VERSION')
+  repo_owner         = Env.get_or_error('ORG')
+  repo_name          = Env.get_or_error('REPO_NAME')
+  github_token       = Env.get('GITHUB_TOKEN')
+  github_username    = Env.get('GITHUB_USER')
+  next_version       = VersionFileReader.next_version || Env.get_or_error('NEXT_VERSION')
   version_to_release = VersionFileReader.go_version || Env.get_or_error('VERSION_TO_RELEASE')
 
   VersionValidator.validate_format(version_to_release)
@@ -111,13 +111,13 @@ task :bump_docs_version do
     versions = update_latest_and_next_version_in_version_json_file(repo_name, version_to_release, next_version)
 
     open('index.html', 'w') do |f|
-      erb = ERB.new(File.read("#{File.dirname(__FILE__)}/../templates/#{repo_name}.index.html.erb"), nil, '-')
+      erb  = ERB.new(File.read("#{File.dirname(__FILE__)}/../templates/#{repo_name}.index.html.erb"), nil, '-')
       html = erb.result(binding)
       f.puts(html)
     end
 
     open('robots.txt', 'w') do |f|
-      erb = ERB.new(File.read("#{File.dirname(__FILE__)}/../templates/robots.txt.erb"), nil, '-')
+      erb  = ERB.new(File.read("#{File.dirname(__FILE__)}/../templates/robots.txt.erb"), nil, '-')
       html = erb.result(binding)
       f.puts(html)
     end

@@ -18,6 +18,10 @@ class VersionFileReader
     read 'git_sha'
   end
 
+  def self.next_version
+    read 'next_go_version'
+  end
+
   private
   def self.read key
     version_file_location = Env.get('VERSION_FILE_LOCATION') || 'version.json'
