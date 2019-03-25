@@ -22,6 +22,10 @@ class VersionFileReader
     read 'next_go_version'
   end
 
+  def self.previous_version
+    read 'previous_go_version'
+  end
+
   private
   def self.read key
     version_file_location = Env.get('VERSION_FILE_LOCATION') || 'version.json'

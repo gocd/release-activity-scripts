@@ -12,12 +12,12 @@ end
 
 desc 'Bump versions of pg and bc addons for each release'
 task :bump_extensions_doc_version do
-  previous_version = Env.get_or_error('PREVIOUS_VERSION')
-  github_token = Env.get('GITHUB_TOKEN')
-  github_username = Env.get('GITHUB_USER')
-  org = Env.get('TEST_ORG') || 'gocd-private'
+  previous_version   = VersionFileReader.previous_version || Env.get_or_error('PREVIOUS_VERSION')
+  github_token       = Env.get('GITHUB_TOKEN')
+  github_username    = Env.get('GITHUB_USER')
+  org                = Env.get('TEST_ORG') || 'gocd-private'
   version_to_release = VersionFileReader.go_version || Env.get_or_error('VERSION_TO_RELEASE')
-  repo_url = build_repo_url(github_username, github_token, org, 'extensions-docs.gocd.org')
+  repo_url           = build_repo_url(github_username, github_token, org, 'extensions-docs.gocd.org')
 
   VersionValidator.validate_format(previous_version)
   VersionValidator.validate_format(version_to_release)
@@ -37,10 +37,10 @@ task :bump_extensions_doc_version do
       unless File.exists?("source/#{addon}/#{version_to_release}")
         sh("cp -r source/#{addon}/#{previous_version} source/#{addon}/#{version_to_release}")
 
-        all_versions_file = "data/plugins/#{addon}/versions/all.json"
+        all_versions_file      = "data/plugins/#{addon}/versions/all.json"
         relative_versions_file = "data/plugins/#{addon}/versions/relative.json"
 
-        versions = JSON.parse(File.read(all_versions_file))
+        versions          = JSON.parse(File.read(all_versions_file))
         relative_versions = JSON.parse(File.read(relative_versions_file))
         versions << version_to_release
 
