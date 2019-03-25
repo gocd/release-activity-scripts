@@ -83,9 +83,6 @@ task :bump_docs_version do
   next_version       = VersionFileReader.next_version
   version_to_release = VersionFileReader.go_version
 
-  VersionValidator.validate_format(version_to_release)
-  VersionValidator.validate_format(next_version)
-
   puts "\n=========================================================================================="
   puts "- Version to release          : #{version_to_release}"
   puts "- Next version                : #{next_version}"

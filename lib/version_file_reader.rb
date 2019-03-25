@@ -31,8 +31,8 @@ class VersionFileReader
     version_file_location = Env.get('VERSION_FILE_LOCATION') || 'version.json'
     if File.exist?(version_file_location)
       value = JSON.parse(File.read(version_file_location))[key]
-      return value.to_s.empty? ? nil : value
+      return value.to_s.empty? ? (raise "#{key} is not present in the json file") : value
     end
-    raise "#{key} is not present in the json file"
+    raise "JSON file not found"
   end
 end

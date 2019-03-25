@@ -48,7 +48,6 @@ task :create_pipeline do
   pipeline_group_name    = Env.get('PIPELINE_GROUP_NAME') || get_pipeline_group_name(repo_name)
   template_name          = Env.get('TEMPLATE_NAME') || get_template_name(repo_name)
 
-  VersionValidator.validate_format(go_version)
   fail 'Must specify environment variable PIPELINE_GROUP_NAME' if pipeline_group_name.to_s.empty?
   fail 'Must specify environment variable TEMPLATE_NAME' if template_name.to_s.empty?
 

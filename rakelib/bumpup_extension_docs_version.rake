@@ -19,9 +19,6 @@ task :bump_extensions_doc_version do
   version_to_release = VersionFileReader.go_version
   repo_url           = build_repo_url(github_username, github_token, org, 'extensions-docs.gocd.org')
 
-  VersionValidator.validate_format(previous_version)
-  VersionValidator.validate_format(version_to_release)
-
   puts "\n=========================================================================================="
   puts "- Version to release   : #{version_to_release}"
   puts "- Previous version     : #{previous_version}"
