@@ -80,8 +80,8 @@ task :bump_docs_version do
   repo_name          = Env.get_or_error('REPO_NAME')
   github_token       = Env.get('GITHUB_TOKEN')
   github_username    = Env.get('GITHUB_USER')
-  next_version       = VersionFileReader.next_version || Env.get_or_error('NEXT_VERSION')
-  version_to_release = VersionFileReader.go_version || Env.get_or_error('VERSION_TO_RELEASE')
+  next_version       = VersionFileReader.next_version
+  version_to_release = VersionFileReader.go_version
 
   VersionValidator.validate_format(version_to_release)
   VersionValidator.validate_format(next_version)

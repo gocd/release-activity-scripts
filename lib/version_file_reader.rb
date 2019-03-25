@@ -33,6 +33,6 @@ class VersionFileReader
       value = JSON.parse(File.read(version_file_location))[key]
       return value.to_s.empty? ? nil : value
     end
-    return nil
+    raise "#{key} is not present in the json file"
   end
 end

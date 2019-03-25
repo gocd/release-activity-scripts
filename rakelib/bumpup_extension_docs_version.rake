@@ -12,11 +12,11 @@ end
 
 desc 'Bump versions of pg and bc addons for each release'
 task :bump_extensions_doc_version do
-  previous_version   = VersionFileReader.previous_version || Env.get_or_error('PREVIOUS_VERSION')
+  previous_version   = VersionFileReader.previous_version
   github_token       = Env.get('GITHUB_TOKEN')
   github_username    = Env.get('GITHUB_USER')
   org                = Env.get('TEST_ORG') || 'gocd-private'
-  version_to_release = VersionFileReader.go_version || Env.get_or_error('VERSION_TO_RELEASE')
+  version_to_release = VersionFileReader.go_version
   repo_url           = build_repo_url(github_username, github_token, org, 'extensions-docs.gocd.org')
 
   VersionValidator.validate_format(previous_version)
