@@ -18,13 +18,21 @@ class VersionFileReader
     read 'git_sha'
   end
 
+  def self.next_version
+    read 'next_go_version'
+  end
+
+  def self.previous_version
+    read 'previous_go_version'
+  end
+
   private
   def self.read key
     version_file_location = Env.get('VERSION_FILE_LOCATION') || 'version.json'
     if File.exist?(version_file_location)
       value = JSON.parse(File.read(version_file_location))[key]
-      return value.to_s.empty? ? nil : value
+      return value.to_s.empty? ? (raise "#{key} is not present in the json file") : value
     end
-    return nil
+    raise "JSON file not found"
   end
 end
