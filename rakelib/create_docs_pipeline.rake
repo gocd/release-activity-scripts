@@ -79,4 +79,33 @@ task :create_pipeline do
   end
 end
 
+desc 'Add the current release to docs pipeline'
+task :add_release_to_docs_pipeline do
+  go_version   = VersionFileReader.go_version
+  go_previous_version   = VersionFileReader.previous_version
+  git_username = Env.get_or_error('GITHUB_USER')
+  git_token    = Env.get_or_error('GITHUB_TOKEN')
+  repo_name    = Env.get_or_error('REPO_NAME').to_s.downcase
 
+  repo_url = "https://#{git_username}:#{git_token}@github.com/gocd/#{repo_name}"
+
+  rm_rf 'build'
+  sh("git clone #{repo_url} build --branch master --depth 1 --quiet")
+
+  cd 'build' do
+    pipeline_file = 'build.gocd.groovy'
+    if File.exist?(pipeline_file)
+      content = File.read(pipeline_file)
+      content.gsub!("'#{go_previous_version}'", "'#{go_previous_version}','#{go_version}'")
+
+      File.open(pipeline_file, "w") {|file| file.puts content}
+
+      response = %x[git status]
+      unless response.include?('nothing to commit')
+        sh("git add .")
+        sh("git commit -m \"Add release '#{go_version}' to older releases\"")
+        sh("git push origin master")
+      end
+    end
+  end
+end
