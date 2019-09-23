@@ -26,9 +26,13 @@
 
 <h1>Welcome to Go Continuous Delivery Developer Documentation</h1>
 <style>
-  .paragraph {
-    font-size: 20px;
-  }
+ .paragraph {
+     font-size: 20px;
+ }
+
+ #links a {
+     display: block;
+ }
 </style>
 
 <p class="paragraph">
@@ -38,7 +42,7 @@
   <br>
 </p>
 
-<p class="paragraph">
+<p class="paragraph" id="links">
   <% versions.each do |version_data| -%>
     <% if version_data[:type] == 'latest' -%>
       <a href="current"><%= version_data[:version] %> (current)</a><br>
