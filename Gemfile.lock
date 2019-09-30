@@ -2,7 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     json (2.2.0)
-    rake (12.3.3)
+    rake (13.0.0)
 
 PLATFORMS
   ruby
