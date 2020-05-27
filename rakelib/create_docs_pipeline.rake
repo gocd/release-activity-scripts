@@ -64,8 +64,9 @@ task :create_pipeline do
   sh("git clone #{repo_url} build --branch master --depth 1 --quiet")
 
   cd 'build' do
-    mkdir 'build_gocd_pipelines' unless Dir.exist?('build_gocd_pipelines')
-    pipeline_config_file_path = "build_gocd_pipelines/#{pipeline_config_filename}"
+    folder_path = "build_gocd_pipelines"
+    mkdir folder_path unless Dir.exist?(folder_path)
+    pipeline_config_file_path = "#{folder_path}/#{pipeline_config_filename}"
     open(pipeline_config_file_path, 'w') do |file|
       file.puts(pipeline_config_content)
     end
@@ -76,13 +77,26 @@ task :create_pipeline do
       sh("git commit -m \"Add config repo pipeline named '#{pipeline_name}' in file '#{pipeline_config_filename}'\"")
       sh("git push origin master")
     end
+
+    all_pipelines = get_pipelines_to_delete(file_extensions_map, folder_path, pipeline_config_format)
+
+    if all_pipelines != nil
+      all_pipelines.each {|file| File.delete("#{folder_path}/#{file}")}
+      response = %x[git status]
+      unless response.include?('nothing to commit')
+        sh("git add #{folder_path}/")
+        sh("git commit -m \"Deleted older releases.\"")
+        sh("git push origin master")
+      end
+    else
+      puts "No older versions to delete!!!"
+    end
   end
 end
 
 desc 'Add the current release to docs pipeline'
 task :add_release_to_docs_pipeline do
   go_version   = VersionFileReader.go_version
-  go_previous_version   = VersionFileReader.previous_version
   git_username = Env.get_or_error('GITHUB_USER')
   git_token    = Env.get_or_error('GITHUB_TOKEN')
   repo_name    = Env.get_or_error('REPO_NAME').to_s.downcase
@@ -95,17 +109,54 @@ task :add_release_to_docs_pipeline do
   cd 'build' do
     pipeline_file = 'build.gocd.groovy'
     if File.exist?(pipeline_file)
-      content = File.read(pipeline_file)
-      content.gsub!("'#{go_previous_version}'", "'#{go_previous_version}','#{go_version}'")
+      content      = File.read(pipeline_file).lines
+      line_index   = content.index {|line| line.include?("def olderReleases =")}
+      line_to_edit = content[line_index]
+      releases     = line_to_edit[(line_to_edit.index('[') + 1)...line_to_edit.index(']')]
+      releases     = releases.split(',').map {|val| val.strip.tr("''", "")}
+
+      releases.push(go_version)
+      releases = releases.sort_by {|val| Gem::Version.new(val)}.reverse
+
+      # delete the older release pipelines. only keep the latest 13
+      if releases.size > 13
+        releases = releases.slice!(0, 13)
+      end
+      updated_content = releases.reverse.map {|val| "'#{val}'"}.join(', ')
+
+      line_to_edit[(line_to_edit.index('[') + 1)...line_to_edit.index(']')] = updated_content
 
       File.open(pipeline_file, "w") {|file| file.puts content}
 
       response = %x[git status]
       unless response.include?('nothing to commit')
         sh("git add .")
-        sh("git commit -m \"Add release '#{go_version}' to older releases\"")
+        sh("git commit -m \"Add release '#{go_version}' to the list of release pipelines and remove older releases.\"")
         sh("git push origin master")
       end
     end
+  end
+end
+
+private
+
+def get_pipelines_to_delete(file_extensions_map, folder_path, pipeline_config_format)
+  all_files = Dir.children(folder_path)
+
+  # filter out the files which do not conform to the format
+  all_pipelines = all_files.keep_if {|value| value.include?(file_extensions_map[pipeline_config_format])}
+
+  # sort and reverse the pipelines list
+  all_pipelines = all_pipelines.sort_by do |val|
+    stop = val.index(".#{file_extensions_map[pipeline_config_format]}")
+    Gem::Version.new(val[0...stop])
+  end
+  all_pipelines = all_pipelines.reverse
+
+  # delete the older release pipelines. only keep the latest 13
+  if all_pipelines.size > 13
+    all_pipelines.drop(13)
+  else
+    nil
   end
 end
