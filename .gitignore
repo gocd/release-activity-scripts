@@ -1,4 +1,6 @@
-.bundle
+.bundle/ruby
 build
 .idea
 bin
+.ruby-version
+.ruby-gemset

@@ -6,11 +6,7 @@ GEM
 
 PLATFORMS
   ruby
-  x86_64-darwin-17
 
 DEPENDENCIES
   json
   rake
-
-BUNDLED WITH
-   1.16.3
