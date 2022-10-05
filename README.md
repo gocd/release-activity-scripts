@@ -29,12 +29,3 @@ REPO_NAME=plugin-api.go.cd bundle exec rake bump_docs_version
 ```
 
 Note: Here script is reading `VERSION_TO_RELEASE` from version.json file 
-
-## Bump up extension docs
-
-```bash
-bundle install --path .bundle --binstubs
-PREVIOUS_VERSION=18.10.0 GITHUB_USER=foo GITHUB_TOKEN=bar bundle exec rake bump_extensions_doc_version
-```
-
-Note: Here script is reading `VERSION_TO_RELEASE` from version.json file 
