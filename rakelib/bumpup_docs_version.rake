@@ -108,13 +108,13 @@ task :bump_docs_version do
     versions = update_latest_and_next_version_in_version_json_file(repo_name, version_to_release, next_version)
 
     open('index.html', 'w') do |f|
-      erb  = ERB.new(File.read("#{File.dirname(__FILE__)}/../templates/#{repo_name}.index.html.erb"), nil, '-')
+      erb  = ERB.new(File.read("#{File.dirname(__FILE__)}/../templates/#{repo_name}.index.html.erb"), trim_mode: '-')
       html = erb.result(binding)
       f.puts(html)
     end
 
     open('robots.txt', 'w') do |f|
-      erb  = ERB.new(File.read("#{File.dirname(__FILE__)}/../templates/robots.txt.erb"), nil, '-')
+      erb  = ERB.new(File.read("#{File.dirname(__FILE__)}/../templates/robots.txt.erb"), trim_mode: '-')
       html = erb.result(binding)
       f.puts(html)
     end
