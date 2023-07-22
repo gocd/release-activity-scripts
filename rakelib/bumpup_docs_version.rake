@@ -130,10 +130,13 @@ task :bump_docs_version do
   rm_rf 'build'
   sh("git clone #{repo_url} build --branch master --depth 1 --quiet")
   cd 'build' do
-    $stderr.puts("*** Creating branch for - #{version_to_release}")
-    sh("git checkout -b release-#{version_to_release}")
-    sh("#{git_push} #{repo_url} release-#{version_to_release}")
-    sh("git checkout master")
+    response = %x[git ls-remote --heads]
+    unless response.include?("refs/heads/release-#{version_to_release}")
+      $stderr.puts("*** Creating branch for - #{version_to_release}")
+      sh("git checkout -b release-#{version_to_release}")
+      sh("#{git_push} #{repo_url} release-#{version_to_release}")
+      sh("git checkout master")
+    end
 
     version_file = current_version_file_location[repo_name]
     $stderr.puts "Bumping version in #{version_file[:dir]}/#{version_file[:file]}"
