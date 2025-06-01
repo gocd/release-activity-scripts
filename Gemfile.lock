@@ -1,8 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    json (2.11.3)
-    rake (13.2.1)
+    json (2.12.2)
+    rake (13.3.0)
 
 PLATFORMS
   ruby
